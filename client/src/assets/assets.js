@@ -327,7 +327,7 @@ export const dummyBookingData = [
             showPrice: 59,
         },
         "amount": 147,
-        "bookedSeats": ["A1", "A2","A3"],
+        "bookedSeats": ["A1", "A2", "A3"],
         "isPaid": true,
     },
 ]
