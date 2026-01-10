@@ -296,38 +296,38 @@ export const dummyBookingData = [
         "user": { "name": "GreatStack", },
         "show": {
             _id: "68352363e96d99513e4221a4",
-            movie: dummyShowsData[0],
-            showDateTime: "2025-06-30T02:30:00.000Z",
-            showPrice: 59,
+            movie: dummyShowsData[1], // Until Dawn
+            showDateTime: "2025-07-24T19:00:00.000Z",
+            showPrice: 150,
         },
-        "amount": 98,
-        "bookedSeats": ["D1", "D2"],
-        "isPaid": false,
-    },
-    {
-        "_id": "68396334fb83252d82e17295",
-        "user": { "name": "GreatStack", },
-        "show": {
-            _id: "68352363e96d99513e4221a4",
-            movie: dummyShowsData[0],
-            showDateTime: "2025-06-30T02:30:00.000Z",
-            showPrice: 59,
-        },
-        "amount": 49,
-        "bookedSeats": ["A1"],
+        "amount": 320,
+        "bookedSeats": ["D4", "D5"],
         "isPaid": true,
     },
     {
-        "_id": "68396334fb83252d82e17295",
+        "_id": "68396334fb83252d82e17296",
         "user": { "name": "GreatStack", },
         "show": {
-            _id: "68352363e96d99513e4221a4",
-            movie: dummyShowsData[0],
-            showDateTime: "2025-06-30T02:30:00.000Z",
-            showPrice: 59,
+            _id: "68352363e96d99513e4221a8",
+            movie: dummyShowsData[2], // Lilo & Stitch
+            showDateTime: "2025-05-18T14:30:00.000Z",
+            showPrice: 120,
         },
-        "amount": 147,
-        "bookedSeats": ["A1", "A2", "A3"],
+        "amount": 500,
+        "bookedSeats": ["A1", "A2", "A3"], // Family outing
+        "isPaid": false,
+    },
+    {
+        "_id": "68396334fb83252d82e17297",
+        "user": { "name": "GreatStack", },
+        "show": {
+            _id: "68352363e96d99513e4221b2",
+            movie: dummyShowsData[5], // Mission: Impossible
+            showDateTime: "2025-05-20T21:00:00.000Z",
+            showPrice: 250,
+        },
+        "amount": 520,
+        "bookedSeats": ["H5", "H6"], // VIP experience
         "isPaid": true,
     },
 ]
