@@ -16,6 +16,7 @@ const syncUserCreation = inngest.createFunction(
             image: image_url
         }
         await User.create(userData)
+        return { success: true }
     }
 )
 
@@ -25,6 +26,7 @@ const syncUserDeletion = inngest.createFunction(
     async (event) => {
         const { id } = event.data
         await User.findByIdAndDelete(id)
+        return { success: true }
     }
 )
 
@@ -40,6 +42,7 @@ const syncUserUpdation = inngest.createFunction(
             image: image_url
         }
         await User.findByIdAndUpdate(id, userData)
+        return { success: true }
     }
 )
 // Create an empty array where we'll export future Inngest functions
