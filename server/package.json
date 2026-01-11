@@ -1,0 +1,24 @@
+{
+  "name": "cinefy",
+  "version": "1.0.0",
+  "description": "A full-stack movie ticket booking web application built using the MERN stack, allowing users to explore movies, watch trailers, select showtimes, choose seats, and book tickets seamlessly. The platform features secure authentication, a modern responsive UI, and an admin dashboard for managing movies and bookings—designed to mirror real-world cinema booking systems.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "server": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@clerk/express": "^1.7.62",
+    "axios": "^1.13.2",
+    "cloudinary": "^2.8.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "inngest": "^3.49.1",
+    "mongoose": "^9.1.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
