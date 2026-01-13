@@ -32,7 +32,30 @@ export const createBooking = async (req, res) => {
             return res.json({ success: false, message: "Show not found" })
         }
 
-        const totalAmount = showData.showPrice * selectedSeats.length
+        // Calculate Total Amount based on Seat Tiers
+        let totalAmount = 0;
+        const basePrice = showData.showPrice;
+        const tiers = {
+            'SILVER': { rows: ['A', 'B', 'C'], extra: 0 },
+            'GOLD': { rows: ['D', 'E', 'F', 'G', 'H'], extra: 100 },
+            'PLATINUM': { rows: ['I'], extra: 200 }
+        };
+
+        selectedSeats.forEach(seatId => {
+            const row = seatId.charAt(0);
+            let seatPrice = basePrice;
+
+            // Determine Tier
+            if (tiers.GOLD.rows.includes(row)) seatPrice += tiers.GOLD.extra;
+            else if (tiers.PLATINUM.rows.includes(row)) seatPrice += tiers.PLATINUM.extra;
+            // Default is Silver (Base Price)
+
+            totalAmount += seatPrice;
+        });
+
+        // Add Convenience Fee
+        const CONVENIENCE_FEE = 20;
+        if (selectedSeats.length > 0) totalAmount += CONVENIENCE_FEE;
 
         const createBooking = await Booking.create({
             user: userId,

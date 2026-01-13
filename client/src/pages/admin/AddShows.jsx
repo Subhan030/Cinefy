@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Calendar as CalendarIcon, MapPin, DollarSign, Film } from 'lucide-react'
+import { Calendar as CalendarIcon, MapPin, IndianRupee, Film } from 'lucide-react'
 import DatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css"
 import { useAppContext } from '../../context/AppContext'
@@ -84,9 +84,19 @@ const AddShows = () => {
         try {
             const token = await getToken();
             const formattedDate = date.toLocaleDateString('en-CA'); // en-CA gives YYYY-MM-DD format in local time
+
+            // Calculate ISO timestamps on client side to preserve Admin's local timezone intent
+            const fullShowTimes = times.map(timeStr => {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                const showDateTime = new Date(date);
+                showDateTime.setHours(hours, minutes, 0, 0);
+                return showDateTime.toISOString();
+            });
+
             const { data } = await axios.post('/api/show/add-show', {
                 movieId: selectedMovieId,
-                showsInput: [{ date: formattedDate, time: times }],
+                // showsInput: [{ date: formattedDate, time: times }], // Legacy
+                showTimes: fullShowTimes, // New robust format
                 showPrice: Number(price),
                 venue
             }, {
@@ -245,9 +255,9 @@ const AddShows = () => {
                                     </select>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-sm text-gray-400">Base Price ($)</label>
+                                    <label className="text-sm text-gray-400">Base Price (₹)</label>
                                     <div className="relative">
-                                        <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                                        <IndianRupee className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
                                         <input
                                             type="number"
                                             value={price}

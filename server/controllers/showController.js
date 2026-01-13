@@ -64,19 +64,36 @@ export const addShow = async (req, res) => {
             await Movie.create(movieDetails)
         }
         const showsToCreate = [];
-        showsInput.forEach(show => {
-            const showDate = show.date;
-            show.time.forEach((time) => {
-                const dateTimeString = `${showDate}T${time}`;
+
+        // Support for precise ISO timestamp array (Client-calculated)
+        if (req.body.showTimes && Array.isArray(req.body.showTimes)) {
+            req.body.showTimes.forEach(isoTime => {
                 showsToCreate.push({
                     movie: movieId,
-                    showDateTime: new Date(dateTimeString),
+                    showDateTime: new Date(isoTime),
                     showPrice,
                     venue,
                     occupiedSeats: {}
                 })
-            })
-        });
+            });
+        }
+        // Legacy support/Server-calculated (might have timezone issues)
+        else if (showsInput) {
+            showsInput.forEach(show => {
+                const showDate = show.date;
+                show.time.forEach((time) => {
+                    const dateTimeString = `${showDate}T${time}`;
+                    showsToCreate.push({
+                        movie: movieId,
+                        showDateTime: new Date(dateTimeString),
+                        showPrice,
+                        venue,
+                        occupiedSeats: {}
+                    })
+                })
+            });
+        }
+
         if (showsToCreate.length > 0) {
             await Show.insertMany(showsToCreate)
         }
