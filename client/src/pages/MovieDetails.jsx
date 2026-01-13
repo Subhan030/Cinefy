@@ -1,45 +1,75 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { dummyShowsData, dummyDateTimeData } from '../assets/assets'
-import { Star, Clock, Calendar, Ticket, ArrowLeft, Share2, Heart, Film } from 'lucide-react'
+import { Star, Clock, Calendar, Ticket, ArrowLeft, Share2, Heart, Film, MapPin } from 'lucide-react'
 import BlurCircle from '../components/BlurCircle'
-import { formatRuntime } from '../lib/utils'
+import { formatRuntime, shareContent } from '../lib/utils'
 import MovieCard from '../components/MovieCard'
+
+import { toast } from 'react-hot-toast'
+import { useAppContext } from '../context/AppContext'
 
 const MovieDetails = () => {
     const { id } = useParams()
     const navigate = useNavigate()
+    const { axios, shows: allShows, favoriteMovies, fetchFavoriteMovies, getToken, user } = useAppContext()
     const [movie, setMovie] = useState(null)
+    const [isFavorite, setIsFavorite] = useState(false)
+    const [availableDates, setAvailableDates] = useState([])
+    const [showTimes, setShowTimes] = useState({})
     const [selectedDate, setSelectedDate] = useState(null)
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null)
 
-    // Helper to get dates for the next 4 days
-    const getNextDays = (count = 4) => {
-        const dates = []
-        const today = new Date('2025-07-24') // Fixed date to match dummy data
-        for (let i = 0; i < count; i++) {
-            const date = new Date(today)
-            date.setDate(today.getDate() + i)
-            dates.push(date.toISOString().split('T')[0])
+    useEffect(() => {
+        if (movie && favoriteMovies) {
+            setIsFavorite(favoriteMovies.some(m => m._id === movie._id))
         }
-        return dates
-    }
-    const availableDates = getNextDays()
+    }, [movie, favoriteMovies])
 
     useEffect(() => {
-        const foundMovie = dummyShowsData.find(m => m.id === parseInt(id))
-        setMovie(foundMovie)
-
-        // Select first available date by default
-        if (availableDates.length > 0) {
-            setSelectedDate(availableDates[0])
+        const fetchMovieData = async () => {
+            try {
+                const { data } = await axios.get(`/api/show/${id}`)
+                if (data.success) {
+                    setMovie(data.movie)
+                    setShowTimes(data.shows)
+                    const dates = Object.keys(data.shows).sort()
+                    setAvailableDates(dates)
+                    if (dates.length > 0) {
+                        setSelectedDate(dates[0])
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch movie details:", error)
+            }
         }
-    }, [id])
+        fetchMovieData()
+    }, [id, axios])
+
+    const handleToggleFavorite = async () => {
+        if (!user) return toast.error("Please login to add favorites")
+        try {
+            const token = await getToken()
+            const { data } = await axios.post('/api/user/update-favorite',
+                { movieId: movie._id },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            if (data.success) {
+                toast.success(data.message)
+                fetchFavoriteMovies() // Update global state
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error("Failed to update favorite")
+        }
+    }
 
     const handleBookTicket = () => {
         if (selectedTimeSlot && selectedDate && movie) {
-            // In a real app, you'd navigate to seat selection with showId
-            navigate(`/movies/${id}/${selectedDate}`)
+            // Navigate to seat selection with the specific showId
+            navigate(`/buy-ticket/${selectedTimeSlot.showId}`)
         } else {
             alert('Please select a showtime')
         }
@@ -58,7 +88,7 @@ const MovieDetails = () => {
             {/* Background Image with Overlay */}
             <div
                 className="absolute top-0 left-0 w-full h-[70vh] bg-cover bg-center -z-10"
-                style={{ backgroundImage: `url(${movie.backdrop_path})` }}
+                style={{ backgroundImage: `url(${movie.backdrop_path?.startsWith('http') ? movie.backdrop_path : 'https://image.tmdb.org/t/p/original' + movie.backdrop_path})` }}
             >
                 <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/80 to-black"></div>
             </div>
@@ -81,7 +111,7 @@ const MovieDetails = () => {
                         <div className="relative group perspective-1000">
                             <div className="w-72 md:w-80 aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 border-2 border-white/10 transform transition-transform duration-500 hover:scale-[1.02] hover:rotate-y-2">
                                 <img
-                                    src={movie.poster_path}
+                                    src={movie.poster_path?.startsWith('http') ? movie.poster_path : `https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                                     alt={movie.title}
                                     className="w-full h-full object-cover"
                                 />
@@ -136,7 +166,7 @@ const MovieDetails = () => {
                                         <div key={index} className="flex flex-col items-center min-w-[100px] gap-2">
                                             <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-white/10 shadow-lg">
                                                 <img
-                                                    src={cast.profile_path}
+                                                    src={cast.profile_path ? `https://image.tmdb.org/t/p/w200${cast.profile_path}` : 'https://via.placeholder.com/200x200?text=No+Image'}
                                                     alt={cast.name}
                                                     className="w-full h-full object-cover"
                                                 />
@@ -159,67 +189,98 @@ const MovieDetails = () => {
                                 Select Date
                             </h3>
                             <div className="flex gap-3 overflow-x-auto pb-4 custom-scrollbar">
-                                {availableDates.map(date => {
-                                    const d = new Date(date)
-                                    const dayName = d.toLocaleDateString('en-US', { weekday: 'short' })
-                                    const monthName = d.toLocaleDateString('en-US', { month: 'short' })
-                                    const dayNum = d.getDate()
-                                    const isSelected = selectedDate === date
+                                {availableDates.length > 0 ? (
+                                    availableDates.map(date => {
+                                        const d = new Date(date)
+                                        // Use explicit locale options to avoid timezone shifts when simply showing day/month
+                                        // We create a date object from the string "YYYY-MM-DD", which defaults to UTC midnight.
+                                        // To show accurate day/date without shift, we can use UTC methods or append time.
+                                        // Simple fix: append T12:00:00 to ensure it's middle of the day local
+                                        const dateObj = new Date(`${date}T12:00:00`)
 
-                                    return (
-                                        <button
-                                            key={date}
-                                            onClick={() => {
-                                                setSelectedDate(date)
-                                                setSelectedTimeSlot(null) // Reset time when date changes
-                                            }}
-                                            className={`flex flex-col items-center justify-center min-w-[70px] h-24 rounded-xl border transition-all duration-300 ${isSelected
-                                                ? 'bg-primary border-primary text-white shadow-lg shadow-primary/30 transform scale-105'
-                                                : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/20'
-                                                }`}
-                                        >
-                                            <span className="text-xs font-medium uppercase opacity-80">{monthName}</span>
-                                            <span className="text-xl font-bold">{dayNum}</span>
-                                            <span className="text-xs font-medium uppercase opacity-80">{dayName}</span>
-                                        </button>
-                                    )
-                                })}
+                                        const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' })
+                                        const monthName = dateObj.toLocaleDateString('en-US', { month: 'short' })
+                                        const dayNum = dateObj.getDate()
+                                        const isSelected = selectedDate === date
+
+                                        return (
+                                            <button
+                                                key={date}
+                                                onClick={() => {
+                                                    setSelectedDate(date)
+                                                    setSelectedTimeSlot(null) // Reset time when date changes
+                                                }}
+                                                className={`flex flex-col items-center justify-center min-w-[70px] h-24 rounded-xl border transition-all duration-300 ${isSelected
+                                                    ? 'bg-primary border-primary text-white shadow-lg shadow-primary/30 transform scale-105'
+                                                    : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/20'
+                                                    }`}
+                                            >
+                                                <span className="text-xs font-medium uppercase opacity-80">{monthName}</span>
+                                                <span className="text-xl font-bold">{dayNum}</span>
+                                                <span className="text-xs font-medium uppercase opacity-80">{dayName}</span>
+                                            </button>
+                                        )
+                                    })
+                                ) : (
+                                    <div className="text-gray-400 text-sm border border-white/10 p-4 rounded-lg w-full bg-white/5">
+                                        No shows available for this movie right now. Please check back later.
+                                    </div>
+                                )}
                             </div>
                         </div>
 
                         {/* Showtime Selection (Dependent on Date) */}
+                        {/* Showtime Selection via Theatres */}
                         {selectedDate && (
                             <div className="mb-10">
-                                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                                <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
                                     <Clock size={20} className="text-primary" />
-                                    Select Time
+                                    Select Theatre & Time
                                 </h3>
-                                <div className="flex flex-wrap gap-3">
-                                    {dummyDateTimeData[selectedDate] ? (
-                                        dummyDateTimeData[selectedDate].map((slot, index) => {
-                                            const timeString = new Date(slot.time).toLocaleTimeString('en-US', {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })
-                                            const isSelected = selectedTimeSlot === slot
 
-                                            return (
-                                                <button
-                                                    key={index}
-                                                    onClick={() => setSelectedTimeSlot(slot)}
-                                                    className={`py-2 px-4 rounded-lg text-sm font-medium border transition-all duration-200 min-w-[100px] ${isSelected
-                                                        ? 'bg-white text-primary border-white shadow-md transform scale-105'
-                                                        : 'bg-transparent border-gray-600 text-gray-300 hover:border-primary hover:text-primary'
-                                                        }`}
-                                                >
-                                                    {timeString}
-                                                </button>
-                                            )
-                                        })
-                                    ) : (
-                                        <p className="text-gray-500 w-full">No shows available for this date.</p>
-                                    )}
-                                </div>
+                                {showTimes[selectedDate] ? (
+                                    <div className="flex flex-col gap-6">
+                                        {Object.entries(
+                                            showTimes[selectedDate].reduce((acc, slot) => {
+                                                const venue = slot.venue || "Cinefy Cinemas - Downtown";
+                                                if (!acc[venue]) acc[venue] = [];
+                                                acc[venue].push(slot);
+                                                return acc;
+                                            }, {})
+                                        ).map(([venueName, slots]) => (
+                                            <div key={venueName} className="bg-white/5 border border-white/10 rounded-xl p-5">
+                                                <div className="flex items-center gap-2 mb-4">
+                                                    <MapPin size={18} className="text-gray-400" />
+                                                    <h4 className="font-bold text-lg text-white">{venueName}</h4>
+                                                </div>
+                                                <div className="flex flex-wrap gap-3">
+                                                    {slots.sort((a, b) => new Date(a.time) - new Date(b.time)).map((slot, index) => {
+                                                        const timeString = new Date(slot.time).toLocaleTimeString('en-US', {
+                                                            hour: '2-digit',
+                                                            minute: '2-digit'
+                                                        });
+                                                        const isSelected = selectedTimeSlot?.showId === slot.showId;
+
+                                                        return (
+                                                            <button
+                                                                key={slot.showId}
+                                                                onClick={() => setSelectedTimeSlot(slot)}
+                                                                className={`py-2 px-4 rounded-lg text-sm font-medium border transition-all duration-200 min-w-[100px] ${isSelected
+                                                                    ? 'bg-white text-primary border-white shadow-md transform scale-105'
+                                                                    : 'bg-transparent border-gray-600 text-gray-300 hover:border-primary hover:text-primary'
+                                                                    }`}
+                                                            >
+                                                                {timeString}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-500 w-full">No shows available for this date.</p>
+                                )}
                             </div>
                         )}
 
@@ -237,10 +298,23 @@ const MovieDetails = () => {
                                 Book Ticket
                             </button>
                             <div className="flex gap-4">
-                                <button className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:bg-white/10 hover:text-primary transition-colors">
-                                    <Heart size={24} />
+                                <button
+                                    onClick={handleToggleFavorite}
+                                    className={`w-14 h-14 rounded-xl border flex items-center justify-center transition-colors ${isFavorite
+                                        ? 'bg-red-500/10 border-red-500 text-red-500 hover:bg-red-500/20'
+                                        : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:text-primary'
+                                        }`}
+                                >
+                                    <Heart size={24} fill={isFavorite ? "currentColor" : "none"} />
                                 </button>
-                                <button className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:bg-white/10 hover:text-white transition-colors">
+                                <button
+                                    onClick={() => shareContent({
+                                        title: movie.title,
+                                        text: `Check out ${movie.title} on Cinefy!`,
+                                        url: window.location.href
+                                    })}
+                                    className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+                                >
                                     <Share2 size={24} />
                                 </button>
                             </div>
@@ -256,11 +330,14 @@ const MovieDetails = () => {
                         You Might Also Like
                     </h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                        {dummyShowsData
-                            .filter(m => m.id !== movie.id)
+                        {allShows && allShows
+                            .filter((s, i, self) =>
+                                s.movie?._id !== movie._id && // Exclude current movie
+                                self.findIndex(t => t.movie?._id === s.movie?._id) === i // Unique movies only
+                            )
                             .slice(0, 5)
-                            .map(relatedMovie => (
-                                <MovieCard key={relatedMovie.id} movie={relatedMovie} />
+                            .map(show => (
+                                <MovieCard key={show.movie._id} movie={{ ...show.movie, nextShow: show.showDateTime }} />
                             ))}
                     </div>
 

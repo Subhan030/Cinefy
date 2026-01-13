@@ -1,11 +1,66 @@
-import React, { useState } from 'react'
-import { dummyShowsData } from '../../assets/assets'
+import React, { useEffect, useState } from 'react'
 import { Search, Edit, Trash2, Plus, Filter } from 'lucide-react'
+import { useAppContext } from '../../context/AppContext'
+import { toast } from 'react-hot-toast'
 
 const ListMovies = () => {
+    const { axios, getToken } = useAppContext()
+    const [movies, setMovies] = useState([])
+    const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
 
-    const filteredMovies = dummyShowsData.filter(movie =>
+    const fetchMovies = async () => {
+        try {
+            const token = await getToken()
+            const { data } = await axios.get('/api/admin/all-movies', {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            if (data.success) {
+                // Ensure poster_paths are full URLs if they aren't already
+                const updatedMovies = data.movies.map(movie => {
+                    if (movie.poster_path && !movie.poster_path.startsWith('http')) {
+                        movie.poster_path = `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                    }
+                    return movie
+                })
+                setMovies(updatedMovies)
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error("Failed to fetch movies")
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this movie? This cannot be undone.")) return;
+
+        try {
+            const token = await getToken()
+            const { data } = await axios.post('/api/admin/delete-movie', { movieId: id }, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            if (data.success) {
+                toast.success(data.message)
+                fetchMovies()
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error("Failed to delete movie")
+        }
+    }
+
+    useEffect(() => {
+        fetchMovies()
+    }, [])
+
+
+    const filteredMovies = movies.filter(movie =>
         movie.title.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
@@ -41,75 +96,80 @@ const ListMovies = () => {
 
             {/* Table */}
             <div className="bg-[#1A1A1D] rounded-2xl border border-white/5 overflow-hidden shadow-xl">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead className="bg-[#27272A] text-gray-400 text-xs uppercase tracking-wider">
-                            <tr>
-                                <th className="px-6 py-4 font-semibold">Movie Detail</th>
-                                <th className="px-6 py-4 font-semibold">Release Date</th>
-                                <th className="px-6 py-4 font-semibold">Runtime</th>
-                                <th className="px-6 py-4 font-semibold">Rating</th>
-                                <th className="px-6 py-4 font-semibold text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-white/5">
-                            {filteredMovies.map((movie, index) => (
-                                <tr key={index} className="hover:bg-white/5 transition-colors group">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-4">
-                                            <img src={movie.poster_path} alt={movie.title} className="w-12 h-16 object-cover rounded-lg shadow-md" />
-                                            <div>
-                                                <p className="font-bold text-white text-lg">{movie.title}</p>
-                                                <div className="flex gap-2 mt-1">
-                                                    {movie.genres.slice(0, 3).map((g, i) => (
-                                                        <span key={i} className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-white/10 text-gray-300">
-                                                            {g.name}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-300 font-medium">
-                                        {movie.release_date}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-300">
-                                        {Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-10 bg-gray-700 rounded-full h-1.5 overflow-hidden">
-                                                    <div
-                                                        className="bg-green-500 h-full rounded-full"
-                                                        style={{ width: `${(movie.vote_average / 10) * 100}%` }}
-                                                    ></div>
-                                                </div>
-                                                <span className="text-sm font-medium">{movie.vote_average}</span>
-                                            </div>
-                                            <span className="text-xs text-gray-500">
-                                                ({movie.vote_count?.toLocaleString()} votes)
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button className="text-gray-400 hover:text-blue-400 transition-colors p-2 hover:bg-blue-400/10 rounded-lg">
-                                                <Edit size={18} />
-                                            </button>
-                                            <button className="text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-red-500/10 rounded-lg">
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </div>
-                                    </td>
+                {loading ? (
+                    <div className="p-8 text-center text-gray-400">Loading movies...</div>
+                ) : filteredMovies.length === 0 ? (
+                    <div className="p-8 text-center text-gray-500">
+                        {searchTerm ? `No movies found matching "${searchTerm}"` : "No movies available."}
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left">
+                            <thead className="bg-[#27272A] text-gray-400 text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th className="px-6 py-4 font-semibold">Movie Detail</th>
+                                    <th className="px-6 py-4 font-semibold">Release Date</th>
+                                    <th className="px-6 py-4 font-semibold">Runtime</th>
+                                    <th className="px-6 py-4 font-semibold">Rating</th>
+                                    <th className="px-6 py-4 font-semibold text-right">Actions</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-                {filteredMovies.length === 0 && (
-                    <div className="p-12 text-center text-gray-500">
-                        No movies found matching "{searchTerm}"
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {filteredMovies.map((movie, index) => (
+                                    <tr key={movie._id || index} className="hover:bg-white/5 transition-colors group">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-4">
+                                                <img src={movie.poster_path} alt={movie.title} className="w-12 h-16 object-cover rounded-lg shadow-md" />
+                                                <div>
+                                                    <p className="font-bold text-white text-lg">{movie.title}</p>
+                                                    <div className="flex gap-2 mt-1">
+                                                        {movie.genres.slice(0, 3).map((g, i) => (
+                                                            <span key={i} className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded bg-white/10 text-gray-300">
+                                                                {g.name}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-300 font-medium">
+                                            {movie.release_date}
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-300">
+                                            {Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-10 bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                                                        <div
+                                                            className="bg-green-500 h-full rounded-full"
+                                                            style={{ width: `${(movie.vote_average / 10) * 100}%` }}
+                                                        ></div>
+                                                    </div>
+                                                    <span className="text-sm font-medium">{movie.vote_average}</span>
+                                                </div>
+                                                <span className="text-xs text-gray-500">
+                                                    ({movie.vote_count?.toLocaleString()} votes)
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button className="text-gray-400 hover:text-blue-400 transition-colors p-2 hover:bg-blue-400/10 rounded-lg">
+                                                    <Edit size={18} />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(movie._id)}
+                                                    className="text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-red-500/10 rounded-lg">
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 )}
             </div>

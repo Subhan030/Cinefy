@@ -4,13 +4,25 @@ import MovieCard from '../components/MovieCard'
 import BlurCircle from '../components/BlurCircle'
 import { Heart } from 'lucide-react'
 
-const Favourite = () => {
-    const [favouriteMovies, setFavouriteMovies] = useState([])
+import { useAppContext } from '../context/AppContext'
 
-    // Simulate loading favourites (using slice of dummy data for demo)
+const Favourite = () => {
+    const { favoriteMovies, shows } = useAppContext()
+    const [displayMovies, setDisplayMovies] = useState([])
+
     useEffect(() => {
-        setFavouriteMovies(dummyShowsData.slice(0, 3))
-    }, [])
+        if (favoriteMovies) {
+            const moviesWithShows = favoriteMovies.map(movie => {
+                // Try to find an upcoming show for this favorite movie
+                const upcomingShow = shows.find(s => s.movie?._id === movie._id)
+                if (upcomingShow) {
+                    return { ...movie, nextShow: upcomingShow.showDateTime }
+                }
+                return movie
+            })
+            setDisplayMovies(moviesWithShows)
+        }
+    }, [favoriteMovies, shows])
 
     return (
         <div className="min-h-screen pt-24 px-6 md:px-16 lg:px-24 relative overflow-hidden">
@@ -24,10 +36,10 @@ const Favourite = () => {
             </div>
 
             {/* Main Content */}
-            {favouriteMovies.length > 0 ? (
+            {displayMovies.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 relative z-10">
-                    {favouriteMovies.map(movie => (
-                        <MovieCard key={movie.id} movie={movie} />
+                    {displayMovies.map(movie => (
+                        <MovieCard key={movie._id} movie={movie} />
                     ))}
                 </div>
             ) : (

@@ -1,62 +1,76 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { dummyShowsData, dummyDateTimeData } from '../assets/assets'
 import { ArrowLeft, Monitor, Clock } from 'lucide-react'
 import BlurCircle from '../components/BlurCircle'
 import toast from 'react-hot-toast'
+import { useAppContext } from '../context/AppContext'
 
 const SeatLayout = () => {
-    const { id, date } = useParams()
+    const { showId } = useParams()
     const navigate = useNavigate()
+    const { axios, getToken, user } = useAppContext()
+    const [show, setShow] = useState(null)
     const [movie, setMovie] = useState(null)
     const [selectedSeats, setSelectedSeats] = useState([])
     const [occupiedSeats, setOccupiedSeats] = useState([])
-    const [selectedTime, setSelectedTime] = useState(null)
+    const [loading, setLoading] = useState(true)
 
-    // Pricing configuration
+    // Seat Config
+    const basePrice = show?.showPrice || 150
     const TIERS = {
-        STANDARD: { price: 150, label: 'Standard' },
-        PREMIUM: { price: 250, label: 'Premium' },
-        VIP: { price: 400, label: 'VIP' }
+        SILVER: { price: basePrice, label: 'Silver', color: 'bg-gray-700' },
+        GOLD: { price: basePrice + 100, label: 'Gold', color: 'bg-yellow-600' },
+        PLATINUM: { price: basePrice + 200, label: 'Platinum', color: 'bg-purple-600' }
     }
     const CONVENIENCE_FEE = 20
 
-    // Realistic Seat Configuration
+    // Complex Theater Configuration
     const seatLayoutConfig = [
-        { tier: 'STANDARD', rows: ['A', 'B', 'C'], sections: [5, 5] }, // 2 sections of 5 seats
-        { tier: 'PREMIUM', rows: ['D', 'E', 'F', 'G'], sections: [4, 8, 4] }, // 3 sections: Left-4, Center-8, Right-4
-        { tier: 'VIP', rows: ['H', 'I'], sections: [8] } // 1 block of 8 seats (Recliners)
+        // Front Section - Silver
+        {
+            tier: 'SILVER',
+            rows: ['A', 'B', 'C'],
+            sections: [6, 6], // Left 6, Right 6 (Aisle in middle)
+            gap: 8
+        },
+        // Middle Section - Gold (Wide aisle before this)
+        {
+            tier: 'GOLD',
+            rows: ['D', 'E', 'F', 'G', 'H'],
+            sections: [6, 8, 6], // Left 6, Center 8, Right 6
+            gap: 4
+        },
+        // Back Section - Platinum (Recliners)
+        {
+            tier: 'PLATINUM',
+            rows: ['I'],
+            sections: [10], // One big exclusive row
+            gap: 0
+        }
     ]
 
     useEffect(() => {
-        const foundMovie = dummyShowsData.find(m => m.id === parseInt(id))
-        setMovie(foundMovie)
-
-        // Set default time to first available
-        const times = dummyDateTimeData[date]
-        if (times && times.length > 0) {
-            setSelectedTime(times[0].time)
+        const fetchShowDetails = async () => {
+            try {
+                const { data } = await axios.get(`/api/show/instance/${showId}`)
+                if (data.success) {
+                    setShow(data.show)
+                    setMovie(data.show.movie)
+                    const occupied = Object.keys(data.show.occupiedSeats || {})
+                    setOccupiedSeats(occupied)
+                } else {
+                    toast.error("Show not found")
+                    navigate('/')
+                }
+            } catch (error) {
+                console.error(error)
+                toast.error("Failed to fetch show details")
+            } finally {
+                setLoading(false)
+            }
         }
-
-        // Simulate random occupied seats
-        const generateOccupiedSeats = () => {
-            const occupied = []
-            seatLayoutConfig.forEach(group => {
-                group.rows.forEach(rowLabel => {
-                    const totalSeatsInRow = group.sections.reduce((a, b) => a + b, 0)
-                    const numberOfOccupied = Math.floor(Math.random() * (totalSeatsInRow / 3)) // ~30% occupancy
-
-                    for (let i = 0; i < numberOfOccupied; i++) {
-                        const randomNum = Math.floor(Math.random() * totalSeatsInRow) + 1
-                        const seatId = `${rowLabel}${randomNum}`
-                        if (!occupied.includes(seatId)) occupied.push(seatId)
-                    }
-                })
-            })
-            setOccupiedSeats(occupied)
-        }
-        generateOccupiedSeats()
-    }, [id, date])
+        fetchShowDetails()
+    }, [showId, axios, navigate])
 
     const handleSeatClick = (seatId, tierRate) => {
         if (occupiedSeats.includes(seatId)) return
@@ -76,12 +90,36 @@ const SeatLayout = () => {
 
     const totalAmount = selectedSeats.reduce((acc, seat) => acc + seat.price, 0) + (selectedSeats.length > 0 ? CONVENIENCE_FEE : 0)
 
-    if (!movie) {
-        return <div className="min-h-screen bg-black" />
+    const handleBooking = async () => {
+        if (!user) return toast.error('Please login to book tickets')
+        try {
+            const token = await getToken()
+            const { data } = await axios.post('/api/booking/create',
+                { showId, selectedSeats: selectedSeats.map(s => s.id) },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            if (data.success) {
+                toast.success('Booking Successful!')
+                navigate('/my-bookings')
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error('Booking failed')
+        }
     }
 
-    const formatTime = (isoString) => {
-        return new Date(isoString).toLocaleTimeString('en-US', {
+    if (loading || !movie) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-black text-white">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        )
+    }
+
+    const formatShowTime = (dateObj) => {
+        return new Date(dateObj).toLocaleTimeString('en-US', {
             hour: '2-digit',
             minute: '2-digit'
         })
@@ -105,8 +143,8 @@ const SeatLayout = () => {
                     <div>
                         <h1 className="text-2xl font-bold">{movie.title}</h1>
                         <p className="text-sm text-gray-400">
-                            {new Date(date).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}
-                            {selectedTime && ` | ${formatTime(selectedTime)}`}
+                            {show && new Date(show.showDateTime).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}
+                            | {show && formatShowTime(show.showDateTime)}
                         </p>
                     </div>
                 </div>
@@ -127,19 +165,26 @@ const SeatLayout = () => {
 
                     {/* Realistic Seat Grid */}
                     <div className="w-full overflow-x-auto pb-12 custom-scrollbar">
-                        <div className="flex flex-col gap-8 min-w-[600px] items-center">
+                        <div className="flex flex-col gap-8 min-w-[700px] items-center mx-auto">
 
                             {seatLayoutConfig.map((tierGroup, groupIndex) => (
-                                <div key={groupIndex} className="flex flex-col gap-2 w-full items-center">
-                                    <div className="text-xs text-gray-500 uppercase tracking-widest mb-1 border-b border-white/5 pb-1 w-full text-center">
-                                        {TIERS[tierGroup.tier].label} - ₹{TIERS[tierGroup.tier].price}
+                                <div key={groupIndex} className="flex flex-col gap-2 w-full items-center relative">
+                                    {/* Section divider/label */}
+                                    <div className="w-full text-center border-b border-white/5 pb-2 mb-4">
+                                        <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${tierGroup.tier === 'PLATINUM' ? 'bg-purple-500/20 text-purple-400' :
+                                            tierGroup.tier === 'GOLD' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                'bg-gray-500/20 text-gray-400'
+                                            }`}>
+                                            {TIERS[tierGroup.tier].label} - ₹{TIERS[tierGroup.tier].price}
+                                        </span>
                                     </div>
 
                                     {tierGroup.rows.map((rowLabel) => (
                                         <div key={rowLabel} className="flex items-center gap-6">
-                                            <span className="w-6 text-right text-gray-500 text-xs font-medium opacity-50">{rowLabel}</span>
+                                            {/* Left Row Label */}
+                                            <span className="w-6 text-right text-gray-500 text-xs font-bold opacity-60">{rowLabel}</span>
 
-                                            <div className="flex items-center gap-4">
+                                            <div className="flex items-center">
                                                 {tierGroup.sections.map((sectionCount, sectionIdx) => {
                                                     // Calculate starting number for this section
                                                     let previousSeats = 0
@@ -147,11 +192,16 @@ const SeatLayout = () => {
 
                                                     return (
                                                         <div key={sectionIdx} className="flex gap-1.5 sm:gap-2">
+                                                            {/* Aisle Spacer */}
+                                                            {sectionIdx > 0 && <div style={{ width: `${tierGroup.gap * 4}px` }}></div>}
+
                                                             {Array.from({ length: sectionCount }).map((_, i) => {
                                                                 const seatNum = previousSeats + i + 1
                                                                 const seatId = `${rowLabel}${seatNum}`
                                                                 const isOccupied = occupiedSeats.includes(seatId)
                                                                 const isSelected = selectedSeats.find(s => s.id === seatId)
+
+                                                                const tierColor = TIERS[tierGroup.tier].color;
 
                                                                 return (
                                                                     <button
@@ -159,17 +209,24 @@ const SeatLayout = () => {
                                                                         onClick={() => handleSeatClick(seatId, TIERS[tierGroup.tier].price)}
                                                                         disabled={isOccupied}
                                                                         className={`
-                                                                            rounded-t-lg rounded-b-md text-[10px] font-medium transition-all duration-300
+                                                                            rounded-t-lg rounded-b-md text-[10px] font-medium transition-all duration-300 relative group
                                                                             flex items-center justify-center border
-                                                                            ${tierGroup.tier === 'VIP' ? 'w-10 h-10 sm:w-12 sm:h-12' : 'w-7 h-7 sm:w-8 sm:h-8'}
+                                                                            ${tierGroup.tier === 'PLATINUM' ? 'w-12 h-10 sm:w-14 sm:h-12' : 'w-7 h-7 sm:w-9 sm:h-8'}
                                                                             ${isOccupied
-                                                                                ? 'bg-gray-800 text-gray-600 border-gray-700 cursor-not-allowed'
+                                                                                ? 'bg-gray-800 text-gray-600 border-gray-800 cursor-not-allowed'
                                                                                 : isSelected
-                                                                                    ? 'bg-primary border-primary text-white shadow-[0_0_15px_rgba(248,69,101,0.5)] transform scale-110'
-                                                                                    : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10 hover:border-white/20 hover:text-white'
+                                                                                    ? 'bg-primary border-primary text-white shadow-[0_0_15px_rgba(248,69,101,0.6)] transform scale-110 z-10'
+                                                                                    : `bg-white/5 border-white/10 text-gray-400 hover:border-white/30 hover:text-white hover:bg-white/10`
                                                                             }
                                                                         `}
                                                                     >
+                                                                        {/* Top colored strip for tier identification on empty seats */}
+                                                                        {!isOccupied && !isSelected && (
+                                                                            <div className={`absolute top-0 left-0 w-full h-[3px] rounded-t-lg opacity-50 ${tierGroup.tier === 'PLATINUM' ? 'bg-purple-500' :
+                                                                                tierGroup.tier === 'GOLD' ? 'bg-yellow-500' :
+                                                                                    'bg-gray-500'
+                                                                                }`}></div>
+                                                                        )}
                                                                         {seatNum}
                                                                     </button>
                                                                 )
@@ -179,7 +236,8 @@ const SeatLayout = () => {
                                                 })}
                                             </div>
 
-                                            <span className="w-6 text-left text-gray-500 text-xs font-medium opacity-50">{rowLabel}</span>
+                                            {/* Right Row Label */}
+                                            <span className="w-6 text-left text-gray-500 text-xs font-bold opacity-60">{rowLabel}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -205,33 +263,31 @@ const SeatLayout = () => {
                     </div>
                 </div>
 
-                {/* Right Sidebar: Available Timings */}
+                {/* Right Sidebar: Show Info */}
                 <div className="w-full lg:w-72 flex-shrink-0 bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
                     <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
                         <Clock size={20} className="text-primary" />
-                        Available Times
+                        Show Details
                     </h3>
-                    <div className="flex flex-col gap-3">
-                        {dummyDateTimeData[date] ? (
-                            dummyDateTimeData[date].map((slot, index) => {
-                                const isSelected = selectedTime === slot.time
-                                return (
-                                    <button
-                                        key={index}
-                                        onClick={() => setSelectedTime(slot.time)}
-                                        className={`w-full py-3 px-4 rounded-xl text-left transition-all duration-300 flex items-center justify-between group ${isSelected
-                                                ? 'bg-primary text-white shadow-lg shadow-primary/20'
-                                                : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-transparent hover:border-white/10'
-                                            }`}
-                                    >
-                                        <span className="font-medium">{formatTime(slot.time)}</span>
-                                        {isSelected && <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>}
-                                    </button>
-                                )
-                            })
-                        ) : (
-                            <p className="text-gray-500 text-sm">No other shows today.</p>
-                        )}
+                    <div className="flex flex-col gap-4">
+                        <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+                            <p className="text-xs text-gray-500 mb-1">Date</p>
+                            <p className="font-medium text-white">
+                                {show && new Date(show.showDateTime).toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                            </p>
+                        </div>
+                        <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+                            <p className="text-xs text-gray-500 mb-1">Time</p>
+                            <p className="font-medium text-white">
+                                {show && formatShowTime(show.showDateTime)}
+                            </p>
+                        </div>
+                        <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+                            <p className="text-xs text-gray-500 mb-1">Price per Ticket</p>
+                            <p className="font-medium text-white">
+                                Starts at ₹{TIERS.SILVER.price}
+                            </p>
+                        </div>
                     </div>
 
                     <div className="mt-8 pt-6 border-t border-white/10">
@@ -258,7 +314,7 @@ const SeatLayout = () => {
                         </div>
                         <button
                             className="bg-primary hover:bg-primary-dull text-white px-12 py-3 rounded-full font-bold shadow-lg shadow-primary/25 transition-all w-full md:w-auto"
-                            onClick={() => toast.success("Proceeding to payment...")}
+                            onClick={handleBooking}
                         >
                             Proceed to Pay
                         </button>

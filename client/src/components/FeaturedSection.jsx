@@ -3,8 +3,28 @@ import MovieCard from "./MovieCard";
 import { dummyShowsData } from "../assets/assets";
 import BlurCircle from "./BlurCircle";
 
+import { useAppContext } from "../context/AppContext";
+import { useEffect, useState } from "react";
+
 const FeaturedSection = () => {
     const navigate = useNavigate();
+    const { shows } = useAppContext()
+    const [movies, setMovies] = useState([])
+
+    useEffect(() => {
+        if (shows && shows.length > 0) {
+            // Get unique movies from shows
+            // Get unique movies from shows
+            const uniqueMovies = Array.from(new Set(shows.map(s => s.movie?._id)))
+                .map(id => {
+                    const show = shows.find(s => s.movie?._id === id)
+                    return show ? { ...show.movie, nextShow: show.showDateTime } : null
+                })
+                .filter(Boolean)
+                .slice(0, 4)
+            setMovies(uniqueMovies)
+        }
+    }, [shows])
 
     return (
         <section className="relative px-6 md:px-16 lg:px-24 mt-16 overflow-hidden">
@@ -32,8 +52,8 @@ const FeaturedSection = () => {
 
             {/* Movie Cards */}
             <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
-                {dummyShowsData.slice(0, 4).map((movie) => (
-                    <MovieCard key={movie.id} movie={movie} />
+                {movies.map((movie) => (
+                    <MovieCard key={movie._id} movie={movie} />
                 ))}
             </div>
 
