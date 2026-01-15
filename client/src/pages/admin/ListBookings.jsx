@@ -55,7 +55,7 @@ const ListBookings = () => {
                 </button>
             </div>
 
-            {/* Filters */}
+            { }
             <div className="flex items-center gap-4 bg-[#1A1A1D] p-4 rounded-xl border border-white/5">
                 <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />

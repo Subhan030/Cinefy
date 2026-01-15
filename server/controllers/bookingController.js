@@ -3,7 +3,7 @@ import Booking from "../models/Bookings.js"
 import User from "../models/User.js"
 import { sendBookingConfirmationEmail } from "../services/emailService.js"
 
-// Function to check availability of selected seats for a movie
+
 const checkSeatsAvailability = async (showId, selectedSeats) => {
     try {
         const showData = await Show.findById(showId)
@@ -32,7 +32,7 @@ export const createBooking = async (req, res) => {
             return res.json({ success: false, message: "Show not found" })
         }
 
-        // Calculate Total Amount based on Seat Tiers
+        
         let totalAmount = 0;
         const basePrice = showData.showPrice;
         const tiers = {
@@ -45,15 +45,15 @@ export const createBooking = async (req, res) => {
             const row = seatId.charAt(0);
             let seatPrice = basePrice;
 
-            // Determine Tier
+            
             if (tiers.GOLD.rows.includes(row)) seatPrice += tiers.GOLD.extra;
             else if (tiers.PLATINUM.rows.includes(row)) seatPrice += tiers.PLATINUM.extra;
-            // Default is Silver (Base Price)
+            
 
             totalAmount += seatPrice;
         });
 
-        // Add Convenience Fee
+        
         const CONVENIENCE_FEE = 20;
         if (selectedSeats.length > 0) totalAmount += CONVENIENCE_FEE;
 
@@ -71,7 +71,7 @@ export const createBooking = async (req, res) => {
         showData.markModified('occupiedSeats');
         await showData.save();
 
-        // Send Email Notification
+        
         const user = await User.findById(userId)
         if (user) {
             const bookingDetails = {
@@ -82,7 +82,7 @@ export const createBooking = async (req, res) => {
                 amount: totalAmount,
                 bookingId: createBooking._id
             }
-            // Send email asynchronously
+            
             sendBookingConfirmationEmail(user.email, bookingDetails)
         }
 

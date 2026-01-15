@@ -1,10 +1,10 @@
 import nodemailer from 'nodemailer';
 
-// Create a reusable transporter object using the default SMTP transport
+
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: process.env.SMTP_PORT || 587,
-    secure: false, // true for 465, false for other ports
+    secure: false, 
     auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
@@ -19,9 +19,9 @@ export const sendBookingConfirmationEmail = async (userEmail, bookingDetails) =>
         }
 
         const info = await transporter.sendMail({
-            from: `"Cinefy" <${process.env.SMTP_USER}>`, // sender address
-            to: userEmail, // list of receivers
-            subject: "Booking Confirmation - Cinefy", // Subject line
+            from: `"Cinefy" <${process.env.SMTP_USER}>`, 
+            to: userEmail, 
+            subject: "Booking Confirmation - Cinefy", 
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
                     <div style="text-align: center; margin-bottom: 20px;">

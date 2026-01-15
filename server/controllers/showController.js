@@ -65,7 +65,7 @@ export const addShow = async (req, res) => {
         }
         const showsToCreate = [];
 
-        // Support for precise ISO timestamp array (Client-calculated)
+        
         if (req.body.showTimes && Array.isArray(req.body.showTimes)) {
             req.body.showTimes.forEach(isoTime => {
                 showsToCreate.push({
@@ -77,7 +77,7 @@ export const addShow = async (req, res) => {
                 })
             });
         }
-        // Legacy support/Server-calculated (might have timezone issues)
+        
         else if (showsInput) {
             showsInput.forEach(show => {
                 const showDate = show.date;
@@ -108,7 +108,7 @@ export const getShows = async (req, res) => {
     try {
         const shows = await Show.find({}).populate('movie').sort({ showDateTime: 1 })
 
-        // Ensure movie paths are full URLs
+        
         shows.forEach(show => {
             if (show.movie && show.movie.poster_path && !show.movie.poster_path.startsWith('http')) {
                 show.movie.poster_path = "https://image.tmdb.org/t/p/original" + show.movie.poster_path;
@@ -167,7 +167,7 @@ export const getHeroMovie = async (req, res) => {
         let heroMovie = null;
         if (settings && settings.heroMovie) {
             heroMovie = settings.heroMovie;
-            // Ensure poster/backdrop paths are clean URLS
+            
             if (heroMovie.poster_path && !heroMovie.poster_path.startsWith('http')) {
                 heroMovie.poster_path = "https://image.tmdb.org/t/p/original" + heroMovie.poster_path;
             }

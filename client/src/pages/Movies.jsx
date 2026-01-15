@@ -15,12 +15,12 @@ const Movies = () => {
 
     const genres = ['All', 'Action', 'Adventure', 'Sci-Fi', 'Comedy', 'Drama', 'Horror', 'Family', 'Fantasy']
 
-    // Load initial data
+    
     useEffect(() => {
         if (shows && shows.length > 0) {
             const now = new Date();
 
-            // Group shows by movie
+            
             const showsByMovie = {};
             shows.forEach(show => {
                 if (!show.movie || !show.movie._id) return;
@@ -30,17 +30,17 @@ const Movies = () => {
                 showsByMovie[show.movie._id].push(show);
             });
 
-            // Creates unique movies list with smart 'nextShow' logic
+            
             const uniqueMovies = Object.values(showsByMovie).map(movieShows => {
                 const movie = movieShows[0].movie;
 
-                // Sort shows by date
+                
                 const sortedShows = movieShows.sort((a, b) => new Date(a.showDateTime) - new Date(b.showDateTime));
 
-                // Find first show in future
+                
                 const upcomingShow = sortedShows.find(s => new Date(s.showDateTime) >= now);
 
-                // Use upcoming show if available, otherwise use the latest show (or keep null to show release date)
+                
                 const nextShow = upcomingShow ? upcomingShow.showDateTime : sortedShows[sortedShows.length - 1].showDateTime;
 
                 return { ...movie, nextShow };
@@ -51,23 +51,23 @@ const Movies = () => {
         }
     }, [shows])
 
-    // Filter logic
+    
     useEffect(() => {
         let result = movies
 
-        // Filter by Search
+        
         if (searchQuery) {
             result = result.filter(movie =>
                 movie.title.toLowerCase().includes(searchQuery.toLowerCase())
             )
         }
 
-        // Filter by Genre
+        
         if (activeGenre !== 'All') {
             result = result.filter(movie =>
                 movie.genres.some(genre =>
                     genre.name === activeGenre ||
-                    (activeGenre === 'Sci-Fi' && genre.name === 'Science Fiction') // Handle mapping if needed
+                    (activeGenre === 'Sci-Fi' && genre.name === 'Science Fiction') 
                 )
             )
         }
@@ -77,11 +77,11 @@ const Movies = () => {
 
     return (
         <div className="min-h-screen pt-24 px-6 md:px-16 lg:px-24 relative overflow-hidden">
-            {/* Background Decoration */}
+            { }
             <BlurCircle size="w-[600px] h-[600px]" className="-top-20 -right-20 opacity-10" />
             <BlurCircle size="w-[400px] h-[400px]" className="bottom-20 -left-20 opacity-10" />
 
-            {/* Header Section */}
+            { }
             <div className="mb-12 relative z-10">
                 <h1 className="text-4xl md:text-5xl font-bold mb-4">Explore Movies</h1>
                 <p className="text-gray-400 max-w-2xl">
@@ -89,12 +89,12 @@ const Movies = () => {
                 </p>
             </div>
 
-            {/* Main Content Area with Sidebar */}
+            { }
             <div className="flex flex-col lg:flex-row gap-8 relative z-10 mb-20">
 
-                {/* Sidebar Filters */}
+                { }
                 <div className="w-full lg:w-64 flex-shrink-0 space-y-8">
-                    {/* Search Widget */}
+                    { }
                     <div className="bg-[#1A1A1D] p-6 rounded-2xl border border-white/5">
                         <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                             <Search size={18} className="text-primary" />
@@ -111,7 +111,7 @@ const Movies = () => {
                         </div>
                     </div>
 
-                    {/* Genres Widget */}
+                    { }
                     <div className="bg-[#1A1A1D] p-6 rounded-2xl border border-white/5">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-lg font-bold flex items-center gap-2">
@@ -145,7 +145,7 @@ const Movies = () => {
                     </div>
                 </div>
 
-                {/* Movie Grid */}
+                { }
                 <div className="flex-1">
                     {filteredMovies.length > 0 ? (
                         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">

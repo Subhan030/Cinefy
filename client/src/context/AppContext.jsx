@@ -31,7 +31,7 @@ export const AppProvider = ({ children }) => {
             }
         } catch (error) {
             console.error(error)
-            // If error, assume not admin
+            
             setIsAdmin(false);
         }
     }

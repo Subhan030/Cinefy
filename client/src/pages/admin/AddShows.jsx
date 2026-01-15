@@ -83,9 +83,9 @@ const AddShows = () => {
 
         try {
             const token = await getToken();
-            const formattedDate = date.toLocaleDateString('en-CA'); // en-CA gives YYYY-MM-DD format in local time
+            const formattedDate = date.toLocaleDateString('en-CA'); 
 
-            // Calculate ISO timestamps on client side to preserve Admin's local timezone intent
+            
             const fullShowTimes = times.map(timeStr => {
                 const [hours, minutes] = timeStr.split(':').map(Number);
                 const showDateTime = new Date(date);
@@ -95,8 +95,8 @@ const AddShows = () => {
 
             const { data } = await axios.post('/api/show/add-show', {
                 movieId: selectedMovieId,
-                // showsInput: [{ date: formattedDate, time: times }], // Legacy
-                showTimes: fullShowTimes, // New robust format
+                
+                showTimes: fullShowTimes, 
                 showPrice: Number(price),
                 venue
             }, {
@@ -129,7 +129,7 @@ const AddShows = () => {
             </div>
 
             <div className="bg-[#1A1A1D] rounded-2xl border border-white/5 shadow-xl overflow-hidden">
-                {/* Cover Image Preview */}
+                { }
                 {selectedMovie && (
                     <div className="w-full h-48 md:h-64 relative">
                         <img
@@ -146,7 +146,7 @@ const AddShows = () => {
                 )}
 
                 <form onSubmit={handleSubmit} className="p-8 space-y-8">
-                    {/* Movie Selection */}
+                    { }
                     <div className="space-y-4">
                         <label className="flex items-center gap-2 text-lg font-semibold text-white">
                             <Film size={20} className="text-primary" />
@@ -194,7 +194,7 @@ const AddShows = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Date & Time */}
+                        { }
                         <div className="space-y-4">
                             <label className="flex items-center gap-2 text-lg font-semibold text-white">
                                 <CalendarIcon size={20} className="text-primary" />
@@ -235,7 +235,7 @@ const AddShows = () => {
                             </div>
                         </div>
 
-                        {/* Hall & Pricing */}
+                        { }
                         <div className="space-y-4">
                             <label className="flex items-center gap-2 text-lg font-semibold text-white">
                                 <MapPin size={20} className="text-primary" />

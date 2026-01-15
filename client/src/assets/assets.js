@@ -296,7 +296,7 @@ export const dummyBookingData = [
         "user": { "name": "GreatStack", },
         "show": {
             _id: "68352363e96d99513e4221a4",
-            movie: dummyShowsData[1], // Until Dawn
+            movie: dummyShowsData[1], 
             showDateTime: "2025-07-24T19:00:00.000Z",
             showPrice: 150,
         },
@@ -309,12 +309,12 @@ export const dummyBookingData = [
         "user": { "name": "GreatStack", },
         "show": {
             _id: "68352363e96d99513e4221a8",
-            movie: dummyShowsData[2], // Lilo & Stitch
+            movie: dummyShowsData[2], 
             showDateTime: "2025-05-18T14:30:00.000Z",
             showPrice: 120,
         },
         "amount": 500,
-        "bookedSeats": ["A1", "A2", "A3"], // Family outing
+        "bookedSeats": ["A1", "A2", "A3"], 
         "isPaid": false,
     },
     {
@@ -322,12 +322,12 @@ export const dummyBookingData = [
         "user": { "name": "GreatStack", },
         "show": {
             _id: "68352363e96d99513e4221b2",
-            movie: dummyShowsData[5], // Mission: Impossible
+            movie: dummyShowsData[5], 
             showDateTime: "2025-05-20T21:00:00.000Z",
             showPrice: 250,
         },
         "amount": 520,
-        "bookedSeats": ["H5", "H6"], // VIP experience
+        "bookedSeats": ["H5", "H6"], 
         "isPaid": true,
     },
 ]

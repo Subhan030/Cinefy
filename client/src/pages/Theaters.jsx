@@ -116,7 +116,7 @@ const Theaters = () => {
                                         ))}
                                     </div>
 
-                                    {/* Now Showing Section */}
+                                    { }
                                     <div className="mb-6 flex-1">
                                         <h3 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
                                             <Film size={16} className="text-primary" />

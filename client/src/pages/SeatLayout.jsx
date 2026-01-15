@@ -15,7 +15,7 @@ const SeatLayout = () => {
     const [occupiedSeats, setOccupiedSeats] = useState([])
     const [loading, setLoading] = useState(true)
 
-    // Seat Config
+    
     const basePrice = show?.showPrice || 150
     const TIERS = {
         SILVER: { price: basePrice, label: 'Silver', color: 'bg-gray-700' },
@@ -24,27 +24,27 @@ const SeatLayout = () => {
     }
     const CONVENIENCE_FEE = 20
 
-    // Complex Theater Configuration
+    
     const seatLayoutConfig = [
-        // Front Section - Silver
+        
         {
             tier: 'SILVER',
             rows: ['A', 'B', 'C'],
-            sections: [6, 6], // Left 6, Right 6 (Aisle in middle)
+            sections: [6, 6], 
             gap: 8
         },
-        // Middle Section - Gold (Wide aisle before this)
+        
         {
             tier: 'GOLD',
             rows: ['D', 'E', 'F', 'G', 'H'],
-            sections: [6, 8, 6], // Left 6, Center 8, Right 6
+            sections: [6, 8, 6], 
             gap: 4
         },
-        // Back Section - Platinum (Recliners)
+        
         {
             tier: 'PLATINUM',
             rows: ['I'],
-            sections: [10], // One big exclusive row
+            sections: [10], 
             gap: 0
         }
     ]
@@ -75,7 +75,7 @@ const SeatLayout = () => {
     const handleSeatClick = (seatId, tierRate) => {
         if (occupiedSeats.includes(seatId)) return
 
-        // Check if removing
+        
         const existing = selectedSeats.find(s => s.id === seatId)
         if (existing) {
             setSelectedSeats(selectedSeats.filter(s => s.id !== seatId))
@@ -131,7 +131,7 @@ const SeatLayout = () => {
             <BlurCircle size="w-[400px] h-[400px]" className="-right-20 bottom-20 opacity-10" />
             <BlurCircle size="w-[600px] h-[600px]" className="left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 opacity-30" />
 
-            {/* Header */}
+            { }
             <div className="relative z-10 container mx-auto flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
                     <button
@@ -152,24 +152,24 @@ const SeatLayout = () => {
 
             <div className="container mx-auto relative z-10 flex flex-col lg:flex-row gap-8 lg:gap-16 items-start justify-center">
 
-                {/* Main Content (Screen & Seats) */}
+                { }
                 <div className="flex-1 w-full max-w-3xl">
-                    {/* Screen Visual */}
+                    { }
                     <div className="w-full mb-12 relative group">
-                        {/* Curved Screen Effect */}
+                        { }
                         <div className="w-full h-20 bg-gradient-to-b from-white/20 to-transparent rounded-[50%] scale-x-[1.2] border-t-4 border-primary/40 shadow-[0_10px_50px_rgba(248,69,101,0.3)] opacity-60"></div>
                         <div className="absolute top-8 left-1/2 -translate-x-1/2 text-center w-full">
                             <p className="text-xs text-gray-500 uppercase tracking-[0.3em] font-light">All eyes this way</p>
                         </div>
                     </div>
 
-                    {/* Realistic Seat Grid */}
+                    { }
                     <div className="w-full overflow-x-auto pb-12 custom-scrollbar">
                         <div className="flex flex-col gap-8 min-w-[700px] items-center mx-auto">
 
                             {seatLayoutConfig.map((tierGroup, groupIndex) => (
                                 <div key={groupIndex} className="flex flex-col gap-2 w-full items-center relative">
-                                    {/* Section divider/label */}
+                                    { }
                                     <div className="w-full text-center border-b border-white/5 pb-2 mb-4">
                                         <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${tierGroup.tier === 'PLATINUM' ? 'bg-purple-500/20 text-purple-400' :
                                             tierGroup.tier === 'GOLD' ? 'bg-yellow-500/20 text-yellow-400' :
@@ -181,18 +181,18 @@ const SeatLayout = () => {
 
                                     {tierGroup.rows.map((rowLabel) => (
                                         <div key={rowLabel} className="flex items-center gap-6">
-                                            {/* Left Row Label */}
+                                            { }
                                             <span className="w-6 text-right text-gray-500 text-xs font-bold opacity-60">{rowLabel}</span>
 
                                             <div className="flex items-center">
                                                 {tierGroup.sections.map((sectionCount, sectionIdx) => {
-                                                    // Calculate starting number for this section
+                                                    
                                                     let previousSeats = 0
                                                     for (let i = 0; i < sectionIdx; i++) previousSeats += tierGroup.sections[i]
 
                                                     return (
                                                         <div key={sectionIdx} className="flex gap-1.5 sm:gap-2">
-                                                            {/* Aisle Spacer */}
+                                                            { }
                                                             {sectionIdx > 0 && <div style={{ width: `${tierGroup.gap * 4}px` }}></div>}
 
                                                             {Array.from({ length: sectionCount }).map((_, i) => {
@@ -220,7 +220,7 @@ const SeatLayout = () => {
                                                                             }
                                                                         `}
                                                                     >
-                                                                        {/* Top colored strip for tier identification on empty seats */}
+                                                                        { }
                                                                         {!isOccupied && !isSelected && (
                                                                             <div className={`absolute top-0 left-0 w-full h-[3px] rounded-t-lg opacity-50 ${tierGroup.tier === 'PLATINUM' ? 'bg-purple-500' :
                                                                                 tierGroup.tier === 'GOLD' ? 'bg-yellow-500' :
@@ -236,7 +236,7 @@ const SeatLayout = () => {
                                                 })}
                                             </div>
 
-                                            {/* Right Row Label */}
+                                            { }
                                             <span className="w-6 text-left text-gray-500 text-xs font-bold opacity-60">{rowLabel}</span>
                                         </div>
                                     ))}
@@ -246,7 +246,7 @@ const SeatLayout = () => {
                         </div>
                     </div>
 
-                    {/* Legend */}
+                    { }
                     <div className="flex justify-center gap-6 md:gap-12 mb-12 text-sm text-gray-400">
                         <div className="flex items-center gap-2">
                             <div className="w-4 h-4 rounded bg-white/10 border border-white/10"></div>
@@ -263,7 +263,7 @@ const SeatLayout = () => {
                     </div>
                 </div>
 
-                {/* Right Sidebar: Show Info */}
+                { }
                 <div className="w-full lg:w-72 flex-shrink-0 bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-sm">
                     <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
                         <Clock size={20} className="text-primary" />
@@ -298,7 +298,7 @@ const SeatLayout = () => {
 
             </div>
 
-            {/* Footer Summary */}
+            { }
             {selectedSeats.length > 0 && (
                 <div className="fixed bottom-0 left-0 w-full bg-[#09090B]/90 backdrop-blur-xl border-t border-white/10 p-6 z-50">
                     <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">

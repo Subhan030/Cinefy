@@ -3,11 +3,11 @@ import Show from "../models/Show.js";
 import Movie from "../models/Movie.js";
 import User from "../models/User.js";
 import SystemSettings from "../models/SystemSettings.js";
-// API to check if user is admin
+
 export const isAdmin = async (req, res) => {
     res.json({ success: true, isAdmin: true })
 }
-// API to get dashboard data
+
 export const getDashboardData = async (req, res) => {
     try {
         const bookings = await Booking.find({});
@@ -79,7 +79,7 @@ export const getSystemSettings = async (req, res) => {
         if (!settings) {
             settings = await SystemSettings.create({});
         }
-        // Populate heroMovie if it exists
+        
         if (settings.heroMovie) {
             await settings.populate('heroMovie');
         }

@@ -13,7 +13,7 @@ const TheatreDetails = () => {
     const [theatre, setTheatre] = useState(null)
     const [theatreMovies, setTheatreMovies] = useState([])
 
-    // Dummy logic to match ID to dummy theatre data
+    
     const theaters = [
         {
             id: 1,
@@ -55,23 +55,23 @@ const TheatreDetails = () => {
         setTheatre(selectedTheatre)
 
         if (selectedTheatre && shows.length > 0) {
-            // Find shows for this venue
+            
             const venueShows = shows.filter(s => s.venue === selectedTheatre.name)
 
-            // Extract unique movies
-            // We need to construct movie objects that MovieCard accepts (with nextShow logic)
-            // Group by movie ID
+            
+            
+            
             const moviesById = {}
             venueShows.forEach(show => {
                 if (!show.movie) return
                 if (!moviesById[show.movie._id]) {
                     moviesById[show.movie._id] = {
                         ...show.movie,
-                        nextShow: show.showDateTime // default first found
+                        nextShow: show.showDateTime 
                     }
                 }
-                // Update nextShow if this show is sooner/upcoming
-                // (Simplified for now, picking first encountered or keep as explains logic in Movies.jsx)
+                
+                
             })
 
             setTheatreMovies(Object.values(moviesById))
@@ -84,7 +84,7 @@ const TheatreDetails = () => {
 
     return (
         <div className="min-h-screen relative overflow-x-hidden text-white bg-black">
-            {/* Header Image */}
+            { }
             <div className="absolute top-0 left-0 w-full h-[60vh] -z-10">
                 <img
                     src={theatre.image}

@@ -13,8 +13,8 @@ const Dashboard = () => {
     const [allMovies, setAllMovies] = useState([])
     const [selectedHeroMovieId, setSelectedHeroMovieId] = useState('')
     const [loadingSettings, setLoadingSettings] = useState(false)
-    // Mock Statistics
-    // Mock Statistics replaced by real data
+    
+    
     const stats = [
         { title: 'Total Movies', value: dashboardData?.totalMovies || 0, icon: Film, color: 'bg-blue-500/10 text-blue-500' },
         { title: 'Active Shows', value: dashboardData?.totalActiveShows || 0, icon: Calendar, color: 'bg-green-500/10 text-green-500' },
@@ -102,7 +102,7 @@ const Dashboard = () => {
                 <p className="text-gray-400">Welcome back, Admin. Here's what's happening today.</p>
             </div>
 
-            {/* Stats Grid */}
+            { }
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.map((stat, index) => (
                     <div key={index} className="bg-[#1A1A1D] p-6 rounded-2xl border border-white/5 shadow-xl hover:translate-y-[-2px] transition-transform duration-300">
@@ -118,7 +118,7 @@ const Dashboard = () => {
                 ))}
             </div>
 
-            {/* Recent Movies Table Section */}
+            { }
             <div className="bg-[#1A1A1D] rounded-2xl border border-white/5 overflow-hidden shadow-xl mt-8">
                 <div className="p-6 border-b border-white/5 flex justify-between items-center">
                     <h3 className="text-lg font-bold">Newest Movies</h3>
@@ -175,7 +175,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Hero Movie Configuration */}
+            { }
             <div className="bg-[#1A1A1D] rounded-2xl border border-white/5 overflow-hidden shadow-xl mt-8">
                 <div className="p-6 border-b border-white/5">
                     <h3 className="text-lg font-bold">Featured Hero Movie</h3>

@@ -15,11 +15,11 @@ const TrailerSection = () => {
 
     return (
         <section className="relative px-6 md:px-16 lg:px-36 mt-24 overflow-hidden">
-            {/* Background Decoration */}
+            { }
             <BlurCircle size="w-[500px] h-[500px]" className="-bottom-32 -left-20 opacity-10" />
 
             <div className="relative z-10">
-                {/* Header */}
+                { }
                 <div className="flex flex-col gap-1 mb-10">
                     <div className="flex items-center gap-2 text-primary mb-2">
                         <Film size={20} />
@@ -29,9 +29,9 @@ const TrailerSection = () => {
                     <div className="w-16 h-1 bg-primary rounded-full mt-2"></div>
                 </div>
 
-                {/* Main Player Container */}
+                { }
                 <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Active Trailer Player */}
+                    { }
                     <div className="flex-1">
                         <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/5 shadow-2xl bg-black group transition-all duration-300">
                             {!isPlaying ? (
@@ -66,7 +66,7 @@ const TrailerSection = () => {
                         </div>
                     </div>
 
-                    {/* Recommended Side/Bottom Grid */}
+                    { }
                     <div className="lg:w-1/3 xl:w-1/4">
                         <h4 className="text-lg font-medium mb-4 flex items-center gap-2">
                             Upcoming Next

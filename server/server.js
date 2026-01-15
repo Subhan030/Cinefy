@@ -4,7 +4,7 @@ import 'dotenv/config';
 import connectDB from './configs/db.js';
 import * as dns from 'node:dns';
 
-// Force usage of IPv4 for DNS resolution to avoid ECONNRESET on some environments
+
 try {
     dns.setDefaultResultOrder('ipv4first');
 } catch (e) {
@@ -22,11 +22,11 @@ const app = express();
 const port = 3000;
 
 await connectDB()
-// Middleware
+
 app.use(express.json())
 app.use(cors())
 app.use(clerkMiddleware())
-// API Routes
+
 app.get('/', (req, res) => res.send('Server is Live!'))
 app.use("/api/inngest", serve({ client: inngest, functions }));
 app.use("/api/show", showRouter);
@@ -34,7 +34,7 @@ app.use("/api/booking", bookingRouter)
 app.use("/api/admin", adminRouter)
 app.use("/api/user", userRouter)
 
-// Export the app for Vercel
+
 export default app;
 
 if (process.env.NODE_ENV !== 'production') {

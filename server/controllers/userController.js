@@ -3,7 +3,7 @@ import { clerkClient } from "@clerk/express";
 import Movie from "../models/Movie.js";
 
 
-// API Controller Function to Get User Bookings
+
 export const getUserBookings = async (req, res) => {
     try {
         const { userId } = req.auth;
@@ -46,7 +46,7 @@ export const getFavorites = async (req, res) => {
         const { userId } = req.auth;
         const user = await clerkClient.users.getUser(userId)
         const favorites = user.privateMetadata.favorites || [];
-        // Getting movies from database
+        
         const movies = await Movie.find({ _id: { $in: favorites } })
         res.json({ success: true, movies })
     } catch (error) {

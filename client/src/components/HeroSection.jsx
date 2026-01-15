@@ -18,7 +18,7 @@ const HeroSection = () => {
                 if (data.success && data.heroMovie) {
                     setHeroMovie(data.heroMovie)
                 } else if (shows && shows.length > 0) {
-                    // Fallback to the first upcoming show if no hero movie is configured
+                    
                     const movie = shows[0]?.movie
                     if (movie) setHeroMovie(movie)
                 }
@@ -33,7 +33,7 @@ const HeroSection = () => {
         fetchHero()
     }, [shows, axios])
 
-    if (!heroMovie) return null // Or a loading skeleton
+    if (!heroMovie) return null 
 
     return (
         <div

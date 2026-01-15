@@ -56,7 +56,7 @@ const MovieDetails = () => {
             )
             if (data.success) {
                 toast.success(data.message)
-                fetchFavoriteMovies() // Update global state
+                fetchFavoriteMovies() 
             } else {
                 toast.error(data.message)
             }
@@ -68,7 +68,7 @@ const MovieDetails = () => {
 
     const handleBookTicket = () => {
         if (selectedTimeSlot && selectedDate && movie) {
-            // Navigate to seat selection with the specific showId
+            
             navigate(`/buy-ticket/${selectedTimeSlot.showId}`)
         } else {
             alert('Please select a showtime')
@@ -85,7 +85,7 @@ const MovieDetails = () => {
 
     return (
         <div className="min-h-screen relative overflow-x-hidden text-white">
-            {/* Background Image with Overlay */}
+            { }
             <div
                 className="absolute top-0 left-0 w-full h-[70vh] bg-cover bg-center -z-10"
                 style={{ backgroundImage: `url(${movie.backdrop_path?.startsWith('http') ? movie.backdrop_path : 'https://image.tmdb.org/t/p/original' + movie.backdrop_path})` }}
@@ -96,7 +96,7 @@ const MovieDetails = () => {
             <BlurCircle size="w-[600px] h-[600px]" className="top-20 -right-20 opacity-20" />
 
             <div className="container mx-auto px-6 md:px-16 lg:px-24 pt-32 pb-20">
-                {/* Back Button */}
+                { }
                 <button
                     onClick={() => navigate(-1)}
                     className="flex items-center gap-2 text-gray-300 hover:text-white mb-8 transition-colors group"
@@ -106,7 +106,7 @@ const MovieDetails = () => {
                 </button>
 
                 <div className="flex flex-col lg:flex-row gap-12">
-                    {/* Left: Poster */}
+                    { }
                     <div className="flex-shrink-0 mx-auto lg:mx-0">
                         <div className="relative group perspective-1000">
                             <div className="w-72 md:w-80 aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 border-2 border-white/10 transform transition-transform duration-500 hover:scale-[1.02] hover:rotate-y-2">
@@ -119,11 +119,11 @@ const MovieDetails = () => {
                         </div>
                     </div>
 
-                    {/* Right: Info & Booking */}
+                    { }
                     <div className="flex-1">
                         <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{movie.title}</h1>
 
-                        {/* Meta Data */}
+                        { }
                         <div className="flex flex-wrap items-center gap-4 text-sm md:text-base text-gray-300 mb-6">
                             <span className="flex items-center gap-1.5 text-yellow-400 font-semibold px-3 py-1 bg-yellow-400/10 rounded-full border border-yellow-400/20">
                                 <Star size={16} fill="currentColor" />
@@ -143,7 +143,7 @@ const MovieDetails = () => {
                             </div>
                         </div>
 
-                        {/* Tagline & Overview */}
+                        { }
                         {movie.tagline && (
                             <p className="text-lg text-gray-400 italic mb-4 font-light">"{movie.tagline}"</p>
                         )}
@@ -155,7 +155,7 @@ const MovieDetails = () => {
                             {movie.overview}
                         </p>
 
-                        {/* Cast Section */}
+                        { }
                         <div className="mb-8">
                             <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                                 <span className="text-primary">★</span> Cast
@@ -182,7 +182,7 @@ const MovieDetails = () => {
                             </div>
                         </div>
 
-                        {/* Date Selection */}
+                        { }
                         <div className="mb-8">
                             <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                                 <Calendar size={20} className="text-primary" />
@@ -192,10 +192,10 @@ const MovieDetails = () => {
                                 {availableDates.length > 0 ? (
                                     availableDates.map(date => {
                                         const d = new Date(date)
-                                        // Use explicit locale options to avoid timezone shifts when simply showing day/month
-                                        // We create a date object from the string "YYYY-MM-DD", which defaults to UTC midnight.
-                                        // To show accurate day/date without shift, we can use UTC methods or append time.
-                                        // Simple fix: append T12:00:00 to ensure it's middle of the day local
+                                        
+                                        
+                                        
+                                        
                                         const dateObj = new Date(`${date}T12:00:00`)
 
                                         const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' })
@@ -208,7 +208,7 @@ const MovieDetails = () => {
                                                 key={date}
                                                 onClick={() => {
                                                     setSelectedDate(date)
-                                                    setSelectedTimeSlot(null) // Reset time when date changes
+                                                    setSelectedTimeSlot(null) 
                                                 }}
                                                 className={`flex flex-col items-center justify-center min-w-[70px] h-24 rounded-xl border transition-all duration-300 ${isSelected
                                                     ? 'bg-primary border-primary text-white shadow-lg shadow-primary/30 transform scale-105'
@@ -229,8 +229,8 @@ const MovieDetails = () => {
                             </div>
                         </div>
 
-                        {/* Showtime Selection (Dependent on Date) */}
-                        {/* Showtime Selection via Theatres */}
+                        { }
+                        { }
                         {selectedDate && (
                             <div className="mb-10">
                                 <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
@@ -284,7 +284,7 @@ const MovieDetails = () => {
                             </div>
                         )}
 
-                        {/* Actions */}
+                        { }
                         <div className="flex flex-col sm:flex-row gap-4 max-w-lg">
                             <button
                                 onClick={handleBookTicket}
@@ -323,7 +323,7 @@ const MovieDetails = () => {
                     </div>
                 </div>
 
-                {/* Related Movies Section */}
+                { }
                 <div className="mt-24">
                     <h3 className="text-2xl font-bold mb-8 flex items-center gap-2">
                         <span className="w-1 h-8 bg-primary rounded-full"></span>
@@ -332,8 +332,8 @@ const MovieDetails = () => {
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                         {allShows && allShows
                             .filter((s, i, self) =>
-                                s.movie?._id !== movie._id && // Exclude current movie
-                                self.findIndex(t => t.movie?._id === s.movie?._id) === i // Unique movies only
+                                s.movie?._id !== movie._id && 
+                                self.findIndex(t => t.movie?._id === s.movie?._id) === i 
                             )
                             .slice(0, 5)
                             .map(show => (

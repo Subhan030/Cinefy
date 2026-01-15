@@ -57,8 +57,8 @@ const ListShows = () => {
     const getStatusColor = (showDateTime) => {
         const now = new Date();
         const showDate = new Date(showDateTime);
-        if (showDate < now) return 'bg-gray-500/10 text-gray-400'; // Past
-        return 'bg-green-500/10 text-green-500'; // Active/Upcoming
+        if (showDate < now) return 'bg-gray-500/10 text-gray-400'; 
+        return 'bg-green-500/10 text-green-500'; 
     }
 
     const getStatusText = (showDateTime) => {
@@ -92,7 +92,7 @@ const ListShows = () => {
                 </div>
             </div>
 
-            {/* Filters */}
+            { }
             <div className="flex items-center gap-4 bg-[#1A1A1D] p-4 rounded-xl border border-white/5">
                 <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />

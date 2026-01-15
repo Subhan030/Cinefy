@@ -19,11 +19,11 @@ const ViewTicket = () => {
         const fetchTicket = async () => {
             try {
                 const token = await getToken()
-                // Reuse my-bookings endpoint or create a specific one. 
-                // For efficiency, we'll fetch all and find one, OR fetch specific if API supports.
-                // Current backend supports getUserBookings which returns all. 
-                // Let's rely on that for now or assume we can filter client side.
-                // Ideally, a GET /api/booking/:id would be better but to avoid backend changes right now:
+                
+                
+                
+                
+                
                 const { data } = await axios.get('/api/booking/my-bookings', {
                     headers: { Authorization: `Bearer ${token}` }
                 })
@@ -53,7 +53,7 @@ const ViewTicket = () => {
         try {
             const canvas = await html2canvas(ticketRef.current, {
                 backgroundColor: '#000000',
-                scale: 2 // Improve quality
+                scale: 2 
             })
             const link = document.createElement('a')
             link.download = `Cinefy-Ticket-${bookingId}.png`
@@ -89,16 +89,16 @@ const ViewTicket = () => {
                     <ArrowLeft size={24} />
                 </button>
                 <h1 className="text-2xl font-bold">Your Ticket</h1>
-                <div className="w-10"></div> {/* Spacer */}
+                <div className="w-10"></div> { }
             </div>
 
-            {/* Ticket Container */}
+            { }
             <div className="relative z-10 w-full max-w-md perspective-1000">
                 <div
                     ref={ticketRef}
                     className="bg-white text-black rounded-3xl overflow-hidden shadow-2xl relative"
                 >
-                    {/* Header Image */}
+                    { }
                     <div className="h-48 relative">
                         <img
                             src={movie.poster_path?.startsWith('http') ? movie.poster_path : `https://image.tmdb.org/t/p/w500${movie.poster_path}`}
@@ -110,9 +110,9 @@ const ViewTicket = () => {
                         </div>
                     </div>
 
-                    {/* Ticket Body */}
+                    { }
                     <div className="p-6 relative">
-                        {/* Punch Holes Effect */}
+                        { }
                         <div className="absolute -top-3 left-0 w-full h-6 flex justify-between px-4">
                             <div className="w-6 h-6 rounded-full bg-black"></div>
                             <div className="w-6 h-6 rounded-full bg-black"></div>
@@ -166,7 +166,7 @@ const ViewTicket = () => {
                     </div>
                 </div>
 
-                {/* Actions */}
+                { }
                 <div className="flex gap-4 mt-8 justify-center">
 
                     <button

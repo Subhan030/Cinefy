@@ -17,7 +17,7 @@ body {
   background-color: #09090B;
 }
 
-/* Custom Scrollbar for specific containers */
+ 
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
 }
@@ -52,7 +52,7 @@ body {
   animation: fade-in 0.6s ease-out forwards;
 }
 
-/* React Datepicker Customization */
+ 
 .react-datepicker-wrapper {
   width: 100%;
 }

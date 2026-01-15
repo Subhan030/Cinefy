@@ -16,7 +16,7 @@ const ListMovies = () => {
                 headers: { Authorization: `Bearer ${token}` }
             })
             if (data.success) {
-                // Ensure poster_paths are full URLs if they aren't already
+                
                 const updatedMovies = data.movies.map(movie => {
                     if (movie.poster_path && !movie.poster_path.startsWith('http')) {
                         movie.poster_path = `https://image.tmdb.org/t/p/w500${movie.poster_path}`
@@ -77,7 +77,7 @@ const ListMovies = () => {
                 </button>
             </div>
 
-            {/* Filters & Search */}
+            { }
             <div className="flex items-center gap-4 bg-[#1A1A1D] p-4 rounded-xl border border-white/5">
                 <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
@@ -94,7 +94,7 @@ const ListMovies = () => {
                 </button>
             </div>
 
-            {/* Table */}
+            { }
             <div className="bg-[#1A1A1D] rounded-2xl border border-white/5 overflow-hidden shadow-xl">
                 {loading ? (
                     <div className="p-8 text-center text-gray-400">Loading movies...</div>

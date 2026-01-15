@@ -7,9 +7,9 @@ const Footer = () => {
             <div className="container mx-auto px-6 md:px-16 lg:px-24">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-8 mb-12 text-center md:text-left">
 
-                    {/* Brand & App Stores */}
+                    { }
                     <div className="flex flex-col items-center md:items-start md:w-1/3">
-                        <Link to="/" className="mb-6 hover:opacity-80 transition-opacity">
+                        <Link to="/" onClick={() => window.scrollTo(0, 0)} className="mb-6 hover:opacity-80 transition-opacity">
                             <img src={assets.logo} alt="Cinefy" className="h-10 w-auto" />
                         </Link>
                         <p className="text-gray-400 text-sm mb-6 max-w-xs">
@@ -25,11 +25,11 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* Navigation Links */}
+                    { }
                     <div className="flex flex-col md:flex-row gap-8 md:gap-16">
                         <div className="flex flex-col gap-4">
                             <h4 className="font-bold text-lg text-primary tracking-wide">Quick Links</h4>
-                            <Link to="/" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 duration-300 inline-block">Home</Link>
+                            <Link to="/" onClick={() => window.scrollTo(0, 0)} className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 duration-300 inline-block">Home</Link>
                             <Link to="/about" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 duration-300 inline-block">About Us</Link>
                             <Link to="/contact" className="text-gray-400 hover:text-white transition-colors hover:translate-x-1 duration-300 inline-block">Contact Us</Link>
                         </div>
@@ -41,7 +41,7 @@ const Footer = () => {
                     </div>
                 </div>
 
-                {/* Copyright */}
+                { }
                 <div className="border-t border-white/5 pt-8 text-center text-gray-500 text-sm">
                     <p>&copy; {new Date().getFullYear()} Cinefy. All rights reserved.</p>
                 </div>

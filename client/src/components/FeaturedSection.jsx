@@ -13,8 +13,7 @@ const FeaturedSection = () => {
 
     useEffect(() => {
         if (shows && shows.length > 0) {
-            // Get unique movies from shows
-            // Get unique movies from shows
+
             const uniqueMovies = Array.from(new Set(shows.map(s => s.movie?._id)))
                 .map(id => {
                     const show = shows.find(s => s.movie?._id === id)
@@ -28,11 +27,11 @@ const FeaturedSection = () => {
 
     return (
         <section className="relative px-6 md:px-16 lg:px-24 mt-16 overflow-hidden">
-            {/* Background Decorations */}
+
             <BlurCircle className="-top-20 -left-20 opacity-15" />
             <BlurCircle size="w-64 h-64" className="bottom-0 -right-10 opacity-10" />
 
-            {/* Header */}
+
             <div className="relative z-10 flex items-center justify-between mb-8">
                 <div className="flex flex-col gap-1">
                     <h2 className="text-2xl md:text-3xl font-bold">
@@ -50,14 +49,14 @@ const FeaturedSection = () => {
                 </button>
             </div>
 
-            {/* Movie Cards */}
+
             <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
                 {movies.map((movie) => (
                     <MovieCard key={movie._id} movie={movie} />
                 ))}
             </div>
 
-            {/* Show More */}
+
             <div className="relative z-10 flex justify-center mt-12 pb-8">
                 <button
                     onClick={() => navigate("/movies")}

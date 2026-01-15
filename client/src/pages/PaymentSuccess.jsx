@@ -9,7 +9,7 @@ const PaymentSuccess = () => {
     const sessionId = searchParams.get('session_id')
     const navigate = useNavigate()
     const { axios, getToken } = useAppContext()
-    const [status, setStatus] = useState('processing') // processing, success, failed
+    const [status, setStatus] = useState('processing') 
 
     useEffect(() => {
         const verify = async () => {
