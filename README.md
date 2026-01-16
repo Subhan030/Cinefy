@@ -47,7 +47,7 @@ Cinefy is a modern, full-stack movie ticket booking application built with the M
 *   **Database**: MongoDB (Mongoose ODM)
 *   **Authentication**: Clerk SDK
 *   **Email Service**: Nodemailer (SMTP)
-*   **Payment**: Stripe (Integrated but currently set for direct booking)
+
 *   **External APIs**: TMDB (The Movie Database) for movie data.
 
 ## ⚙️ Installation & Setup
@@ -135,6 +135,15 @@ Cinefy/
 
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome!
+
+## 🔮 Future Roadmap
+*   **Payment Integration**: Full Stripe integration for secure online payments.
+*   **Mobile Application**: Development of a React Native mobile app for iOS and Android.
+*   **Loyalty Program**: Reward system for frequent bookers with points and discounts.
+*   **Advanced Analytics**: Enhanced admin dashboard with detailed revenue and occupancy reports.
+*   **Social & Reviews**: User reviews, ratings, and social sharing features.
+*   **Localization**: Multi-language support to cater to a diverse audience.
+*   **Dark/Light Mode**: User preference for theme toggling.
 
 ## 📄 License
 This project is open-source and available for personal and educational use.
