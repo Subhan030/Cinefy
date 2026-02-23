@@ -1,4 +1,4 @@
-# Cinefy 🎬
+# CINEFY 🎬
 
 Cinefy is a modern, full-stack movie ticket booking application built with the MERN stack. It offers a premium user experience for browsing movies, selecting theatres, choosing seats, and managing bookings, complete with an administrative dashboard for full system control.
 
