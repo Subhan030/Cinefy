@@ -50,9 +50,10 @@ const ListShows = () => {
         fetchShows()
     }, [])
 
-    const filteredShows = shows.filter(show =>
-        show.movie?.title?.toLowerCase().includes(search.toLowerCase())
-    )
+    const filteredShows = shows.filter(show => {
+        const title = show.movie?.title || '';
+        return title.toLowerCase().includes(search.toLowerCase());
+    })
 
     const getStatusColor = (showDateTime) => {
         const now = new Date();

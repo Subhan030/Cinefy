@@ -332,8 +332,9 @@ const MovieDetails = () => {
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                         {allShows && allShows
                             .filter((s, i, self) =>
-                                s.movie?._id !== movie._id && 
-                                self.findIndex(t => t.movie?._id === s.movie?._id) === i 
+                                s.movie && s.movie._id &&
+                                s.movie._id !== movie._id && 
+                                self.findIndex(t => t.movie?._id === s.movie._id) === i 
                             )
                             .slice(0, 5)
                             .map(show => (

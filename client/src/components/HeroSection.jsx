@@ -18,15 +18,14 @@ const HeroSection = () => {
                 if (data.success && data.heroMovie) {
                     setHeroMovie(data.heroMovie)
                 } else if (shows && shows.length > 0) {
-                    
-                    const movie = shows[0]?.movie
-                    if (movie) setHeroMovie(movie)
+                    const validShow = shows.find(s => s.movie);
+                    if (validShow) setHeroMovie(validShow.movie)
                 }
             } catch (error) {
                 console.error("Failed to fetch hero movie:", error)
                 if (shows && shows.length > 0) {
-                    const movie = shows[0]?.movie
-                    if (movie) setHeroMovie(movie)
+                    const validShow = shows.find(s => s.movie);
+                    if (validShow) setHeroMovie(validShow.movie)
                 }
             }
         }

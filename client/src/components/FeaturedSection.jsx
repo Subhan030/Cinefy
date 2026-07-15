@@ -13,10 +13,10 @@ const FeaturedSection = () => {
 
     useEffect(() => {
         if (shows && shows.length > 0) {
-
-            const uniqueMovies = Array.from(new Set(shows.map(s => s.movie?._id)))
+            const validShows = shows.filter(s => s.movie && s.movie._id);
+            const uniqueMovies = Array.from(new Set(validShows.map(s => s.movie._id)))
                 .map(id => {
-                    const show = shows.find(s => s.movie?._id === id)
+                    const show = validShows.find(s => s.movie._id === id)
                     return show ? { ...show.movie, nextShow: show.showDateTime } : null
                 })
                 .filter(Boolean)

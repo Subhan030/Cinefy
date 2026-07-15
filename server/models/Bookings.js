@@ -7,5 +7,5 @@ const bookingSchema = new mongoose.Schema({
     isPaid: { type: Boolean, default: false },
     paymentLink: { type: String },
 }, { timestamps: true })
-const Booking = mongoose.model("Booking", bookingSchema);
-export default Booking;
+const Bookings = mongoose.model("Booking", bookingSchema);
+export default Bookings;
